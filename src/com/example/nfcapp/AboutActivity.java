@@ -3,8 +3,6 @@ package com.example.nfcapp;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 
 public class AboutActivity extends Activity {
 
@@ -16,7 +14,8 @@ public class AboutActivity extends Activity {
 		@SuppressWarnings("unused")
 		Intent receivedIntent = getIntent();
 	}
-
+	
+	/*
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 
@@ -35,5 +34,5 @@ public class AboutActivity extends Activity {
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
-	}
+	}*/
 }

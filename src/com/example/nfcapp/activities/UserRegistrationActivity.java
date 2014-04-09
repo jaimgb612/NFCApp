@@ -9,16 +9,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
-import android.support.v4.view.ViewPager.LayoutParams;
-import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.nfcapp.AboutActivity;
 import com.example.nfcapp.R;
 
 public class UserRegistrationActivity extends Activity {
@@ -50,7 +47,7 @@ public class UserRegistrationActivity extends Activity {
 		String username = new String(((EditText)findViewById(R.id.usernameField)).getText().toString());
 		String password = new String(((EditText)findViewById(R.id.passwordField)).getText().toString());
 		writeDataToFile(username, password);
-		createPostRegistrationLayout();
+		registrationSuccessfulToast();
 		nextOperation();
 		finish();
 	}
@@ -73,18 +70,8 @@ public class UserRegistrationActivity extends Activity {
 		text = null;
 	}
 	
-	public void createPostRegistrationLayout() {
-		LinearLayout postRegistrationLayout = new LinearLayout(this);
-		postRegistrationLayout.setOrientation(LinearLayout.VERTICAL);
-		LayoutParams postRegistrationLayoutParams = new LayoutParams();
-		postRegistrationLayout.setLayoutParams(postRegistrationLayoutParams);
-		
-		TextView displayText = new TextView(this);
-		displayText.setText("Registration Successful");
-		displayText.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 25);
-		displayText.setGravity(LinearLayout.HORIZONTAL | LinearLayout.VERTICAL);
-		postRegistrationLayout.addView(displayText);
-		setContentView(postRegistrationLayout);
+	public void registrationSuccessfulToast() {
+		Toast.makeText(this, "Registration successful", Toast.LENGTH_SHORT).show();
 	}
 	
 	public void nextOperation() {
@@ -126,6 +113,14 @@ public class UserRegistrationActivity extends Activity {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle action bar item clicks here. The action bar will
+		// automatically handle clicks on the Home/Up button, so long
+		// as you specify a parent activity in AndroidManifest.xml.
+		int id = item.getItemId();
+		if (id == R.id.action_settings) {
+			return true;
+		}
+		
 		switch (item.getItemId()) {
 		case android.R.id.home:
 			// This ID represents the Home or Up button. In the case of this
@@ -137,7 +132,12 @@ public class UserRegistrationActivity extends Activity {
 			//
 			NavUtils.navigateUpFromSameTask(this);
 			return true;
+			
+		case R.id.action_about:
+			Intent aboutIntent = new Intent(this, AboutActivity.class);
+			startActivity(aboutIntent);
 		}
+		
 		return super.onOptionsItemSelected(item);
 	}
 
