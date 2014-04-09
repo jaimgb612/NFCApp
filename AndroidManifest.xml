@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.nfcapp"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk
+        android:minSdkVersion="16"
+        android:targetSdkVersion="16" />
+
+    <uses-permission android:name="android.permission.NFC" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <activity
+            android:name="com.example.nfcapp.activities.MainActivity"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.nfc.action.NDEF_DISCOVERED" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.example.nfcapp.activities.UserRegistrationActivity"
+            android:label="@string/title_activity_user_registration" />
+        <activity
+            android:name="com.example.nfcapp.activities.SendDataToServerActivity"
+            android:label="@string/title_activity_send_data_to_server" />
+        <activity
+            android:name="com.example.nfcapp.activities.DisplayRoomStatusActivity"
+            android:label="@string/title_activity_display_room_status" >
+        </activity>
+        <activity
+            android:name="com.example.nfcapp.AboutActivity"
+            android:label="@string/title_activity_about" >
+        </activity>
+    </application>
+
+</manifest>
