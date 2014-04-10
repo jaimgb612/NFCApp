@@ -1,4 +1,6 @@
-package com.example.nfcapp;
+package com.example.nfcapp.activities;
+
+import com.example.nfcapp.R;
 
 import android.app.Activity;
 import android.content.Intent;

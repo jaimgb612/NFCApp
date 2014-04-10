@@ -26,6 +26,13 @@ public class SendDataToServerActivity extends Activity {
 		text = (String) receivedIntent.getStringExtra(MainActivity.SEND_DATA_TO_SERVER);
 		TextView dataField = (TextView) findViewById(R.id.displayDataField);
 		dataField.setText(text);
+		
+		sendDataToServer();
+	}
+	
+	public void sendDataToServer() {
+		SendDataToServerTask newTask = new SendDataToServerTask();
+		newTask.execute();
 	}
 
 	/**
@@ -66,39 +73,36 @@ public class SendDataToServerActivity extends Activity {
 		return super.onOptionsItemSelected(item);
 	}
 	
-	public String packetData()
-	{
-		StringBuilder data = new StringBuilder();
-		data.append(MainActivity.USERNAME);
-		data.append(";");
-		data.append(text);
-		return data.toString();
-	}
-	
-	private class SendDataToServerTask extends AsyncTask<Void , Void, Void>
-	{
-		 protected Void doInBackground(Void... voids)
-		 {
+	private class SendDataToServerTask extends AsyncTask<Void , Void, Void> {
+		 
+		public String packetData() {
+			StringBuilder data = new StringBuilder(MainActivity.USERNAME);
+			data.append(";");
+			data.append(text);
+			return data.toString();
+		}
+		
+		protected Void doInBackground(Void... voids) {
 		        String packet = null;
 				UtilConnection objUtil = new UtilConnection();
-				objUtil.CreateSocket();
+				objUtil.createSocket();
 				
 				objUtil.openOutputStream();
 				//objUtil.openInputStream();
 				
-				packet = packetData();
+				packet = new String(packetData());
+				System.out.println(packet);
 				objUtil.writeToSocket(packet);
 				
 				//close
 				objUtil.closeSocket();
 			    return null;
 		 }
-		 protected void onProgressUpdate(Void... voids) {
-	         //setProgressPercent(progress[0]);
-	     }
 
-	     protected void onPostExecute(Void... voids) {
+	     @SuppressWarnings("unused")
+		protected void onPostExecute(Void... voids) {
 	         //showDialog("Downloaded " + result + " bytes");
+	    	 
 	     }
 	}
 

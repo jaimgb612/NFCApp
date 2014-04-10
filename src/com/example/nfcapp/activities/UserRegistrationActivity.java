@@ -15,7 +15,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.nfcapp.AboutActivity;
+import com.example.nfcapp.activities.AboutActivity;
 import com.example.nfcapp.R;
 
 public class UserRegistrationActivity extends Activity {
@@ -46,6 +46,7 @@ public class UserRegistrationActivity extends Activity {
 	public void registerUser(View view) {
 		String username = new String(((EditText)findViewById(R.id.usernameField)).getText().toString());
 		String password = new String(((EditText)findViewById(R.id.passwordField)).getText().toString());
+		MainActivity.USERNAME = new String(username);
 		writeDataToFile(username, password);
 		registrationSuccessfulToast();
 		nextOperation();

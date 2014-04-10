@@ -136,14 +136,23 @@ public class MainActivity extends Activity {
 	
 	public int checkIfUserIsRegistered() {
 		String filename = new String("NFCAppPrivateData");
-		//String username;
-		FileInputStream fileStream;
+		byte[] buffer = new byte[64];
+		String holder;
+		String[] holders = null;
+		FileInputStream fileStream = null;
 		
 		try {
 			fileStream = openFileInput(filename);
-			//username = fileStream.readLine();
+			if (fileStream.read(buffer, 0, 64) < 0) {
+				Toast.makeText(this, "ERROR: Please register again", Toast.LENGTH_SHORT).show();
+			}
+			holder = new String(buffer);
+			holders = holder.split("\n");
+			USERNAME = new String(holders[0]);
 		} catch (FileNotFoundException e) {
 			return -1;
+		} catch (IOException e) {
+			//e.printStackTrace();
 		}
 		
 		try {
@@ -152,6 +161,9 @@ public class MainActivity extends Activity {
 			//e.printStackTrace();
 		}
 		filename = null;
+		holder = null;
+		holders = null;
+		buffer = null;
 		return 0;
 	}
 	
