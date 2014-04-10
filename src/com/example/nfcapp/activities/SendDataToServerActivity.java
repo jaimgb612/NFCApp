@@ -1,18 +1,20 @@
 package com.example.nfcapp.activities;
 
-import com.example.nfcapp.AboutActivity;
-import com.example.nfcapp.R;
-
 import android.app.Activity;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
-public class SendDataToServerActivity extends Activity {
+import com.example.nfcapp.R;
+import com.example.nfcapp.client.UtilConnection;
 
+public class SendDataToServerActivity extends Activity {
+	private String text;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -21,7 +23,7 @@ public class SendDataToServerActivity extends Activity {
 		//setupActionBar();
 		
 		Intent receivedIntent = getIntent();
-		String text = (String) receivedIntent.getStringExtra(MainActivity.SEND_DATA_TO_SERVER);
+		text = (String) receivedIntent.getStringExtra(MainActivity.SEND_DATA_TO_SERVER);
 		TextView dataField = (TextView) findViewById(R.id.displayDataField);
 		dataField.setText(text);
 	}
@@ -62,6 +64,42 @@ public class SendDataToServerActivity extends Activity {
 		}
 		
 		return super.onOptionsItemSelected(item);
+	}
+	
+	public String packetData()
+	{
+		StringBuilder data = new StringBuilder();
+		data.append(MainActivity.USERNAME);
+		data.append(";");
+		data.append(text);
+		return data.toString();
+	}
+	
+	private class SendDataToServerTask extends AsyncTask<Void , Void, Void>
+	{
+		 protected Void doInBackground(Void... voids)
+		 {
+		        String packet = null;
+				UtilConnection objUtil = new UtilConnection();
+				objUtil.CreateSocket();
+				
+				objUtil.openOutputStream();
+				//objUtil.openInputStream();
+				
+				packet = packetData();
+				objUtil.writeToSocket(packet);
+				
+				//close
+				objUtil.closeSocket();
+			    return null;
+		 }
+		 protected void onProgressUpdate(Void... voids) {
+	         //setProgressPercent(progress[0]);
+	     }
+
+	     protected void onPostExecute(Void... voids) {
+	         //showDialog("Downloaded " + result + " bytes");
+	     }
 	}
 
 }
