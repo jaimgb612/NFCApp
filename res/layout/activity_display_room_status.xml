@@ -10,7 +10,14 @@
     tools:context=".SendDataToServerActivity" >
     
     <TextView
-        android:id="@+id/displayRoomStatusField"
+        android:id="@+id/displayRoomStatusHeader"
+        android:layout_width="match_parent"
+        android:layout_height="50sp"
+        android:layout_gravity="center"
+        android:gravity="center" />
+    
+    <TextView
+        android:id="@+id/displayRoomStatusDetails"
         android:layout_width="match_parent"
         android:layout_height="50sp"
         android:layout_gravity="center"

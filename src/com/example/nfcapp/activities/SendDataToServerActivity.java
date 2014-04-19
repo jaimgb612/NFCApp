@@ -8,12 +8,14 @@ import android.support.v4.app.NavUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.nfcapp.R;
-import com.example.nfcapp.client.UtilConnection;
+import com.example.nfcapp.utilClasses.SocketClass;
 
 public class SendDataToServerActivity extends Activity {
 	private String text;
+	public boolean serverUnavailableFlag = false;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -28,11 +30,22 @@ public class SendDataToServerActivity extends Activity {
 		dataField.setText(text);
 		
 		sendDataToServer();
+		displayRoomStatus();
+		finish();
 	}
 	
 	public void sendDataToServer() {
 		SendDataToServerTask newTask = new SendDataToServerTask();
 		newTask.execute();
+		
+		if (serverUnavailableFlag == true) {
+			Toast.makeText(this, "Server unavailable.", Toast.LENGTH_SHORT).show();
+		}
+	}
+	
+	public void displayRoomStatus() {
+		Intent intentToDisplay = new Intent(this, DisplayRoomStatusActivity.class);
+		startActivity(intentToDisplay);
 	}
 
 	/**
@@ -75,35 +88,41 @@ public class SendDataToServerActivity extends Activity {
 	
 	private class SendDataToServerTask extends AsyncTask<Void , Void, Void> {
 		 
-		public String packetData() {
-			StringBuilder data = new StringBuilder(MainActivity.USERNAME);
-			data.append(";");
+		public String createMessage() {
+			StringBuilder data = new StringBuilder("MESSAGEA");
+			data.append(" ");
 			data.append(text);
+			//data.append(" ");
+			//data.append(MainActivity.USERNAME);
+			System.out.println(data);
 			return data.toString();
 		}
 		
-		protected Void doInBackground(Void... voids) {
-		        String packet = null;
-				UtilConnection objUtil = new UtilConnection();
-				objUtil.createSocket();
+		protected Void doInBackground(Void... args) {
+		        String message = null;
+				SocketClass clientSocket = new SocketClass();
+				if (clientSocket.createSocket() == -1) {
+					serverUnavailableFlag = true;
+					return null;
+				}
 				
-				objUtil.openOutputStream();
+				clientSocket.openOutputStream();
 				//objUtil.openInputStream();
 				
-				packet = new String(packetData());
-				System.out.println(packet);
-				objUtil.writeToSocket(packet);
+				message = new String(createMessage());
+				System.out.println(message);
+				clientSocket.writeToSocket(message);
 				
 				//close
-				objUtil.closeSocket();
+				clientSocket.closeSocket();
+				clientSocket = null;
+				message = null;
 			    return null;
 		 }
 
-	     @SuppressWarnings("unused")
-		protected void onPostExecute(Void... voids) {
+	     protected void onPostExecute(Void arg) {
 	         //showDialog("Downloaded " + result + " bytes");
 	    	 
 	     }
 	}
-
 }

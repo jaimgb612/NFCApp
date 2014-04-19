@@ -44,7 +44,7 @@
             android:label="@string/title_activity_display_room_status" >
         </activity>
         <activity
-            android:name="com.example.nfcapp.AboutActivity"
+            android:name="com.example.nfcapp.activities.AboutActivity"
             android:label="@string/title_activity_about" >
         </activity>
     </application>
