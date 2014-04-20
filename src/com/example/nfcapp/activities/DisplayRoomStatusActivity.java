@@ -1,16 +1,23 @@
 package com.example.nfcapp.activities;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.nfcapp.R;
@@ -19,7 +26,7 @@ import com.example.nfcapp.utilClasses.SocketClass;
 public class DisplayRoomStatusActivity extends Activity {
 
 	public boolean serverUnavailableFlag = false;
-	public String textField = null;
+	public ArrayList<String> list = new ArrayList<String>();
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -34,9 +41,17 @@ public class DisplayRoomStatusActivity extends Activity {
 	
 	public void displayRoomStatus() {
 		TextView dataField = (TextView) findViewById(R.id.displayRoomStatusHeader);
- 		dataField.setText("Room Occupancy Table");
+ 		dataField.setText("Loading...");
 		RequestDataFromServerTask task = new RequestDataFromServerTask();
 		task.execute();
+	}
+	
+	public void createLayoutForDisplay() {
+		ListView listView = (ListView) findViewById(R.id.displayRoomStatusDetails);
+		
+		StableArrayAdapter adapter = new StableArrayAdapter(this, 
+			        android.R.layout.simple_list_item_1, list);
+		listView.setAdapter(adapter);
 	}
 	
 	private class RequestDataFromServerTask extends AsyncTask<Void , Void, Void> {
@@ -52,6 +67,7 @@ public class DisplayRoomStatusActivity extends Activity {
 		public void parseMessageAndCreateLayout(String text) {
 			JSONObject jsonObj = null;
 			JSONArray results = null;
+			int i = 0;
 			try {
 				jsonObj = new JSONObject(text);
 				results = jsonObj.getJSONArray("data");
@@ -59,6 +75,21 @@ public class DisplayRoomStatusActivity extends Activity {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 				System.out.println("String to JSON or to Array error");
+			}
+			while (!results.isNull(i)) {
+				try {
+					JSONObject result = results.getJSONObject(i);
+					String roomNo = (String) result.get("Room no");
+					if ((Integer) result.get("Flag") == 0) {
+						list.add(new String("            " + roomNo + "      :        Free            "));
+					} else {
+						list.add(new String("            " + roomNo + "      :      Occupied          "));
+					}
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				i++;
 			}
 			
 		}
@@ -81,17 +112,15 @@ public class DisplayRoomStatusActivity extends Activity {
 				System.out.println(message);
 				clientSocket.writeToSocket(message);
 				
+				receivedMessage.append("{\"data\":");
 				clientSocket.openInputStream();
 				if ((receivedText = clientSocket.readFromSocket()) != null) {
 					receivedMessage.append(receivedText);
 				}
+				receivedMessage.append("}");
 				
 				System.out.println("JSON: " + receivedMessage);
 				
-				//textField = new String("{\"data\":" + receivedMessage + "}");
-				
-				//Below two lines are meant to be used, correct output on server and use below code
-				//textField = new String(receivedMessage);
 				parseMessageAndCreateLayout(receivedMessage.toString());
 				
 				//close
@@ -107,15 +136,38 @@ public class DisplayRoomStatusActivity extends Activity {
 	     
 	     public void setupDisplayAfterLoad() {
 	 		TextView dataField = (TextView) findViewById(R.id.displayRoomStatusHeader);
-	 		
 	 		if (serverUnavailableFlag == true) {
 	 			dataField.setText("Server unavailable");
 	 			serverUnavailableFlag = false;
 	 		} else {
-	 			dataField = (TextView) findViewById(R.id.displayRoomStatusDetails);
-	 			dataField.setText(textField);
+	 			dataField.setText("Room Occupancy Details");
+	 			createLayoutForDisplay();
 	 		}
 	 	}
+	}
+	
+	private class StableArrayAdapter extends ArrayAdapter<String> {
+
+	    HashMap<String, Integer> mIdMap = new HashMap<String, Integer>();
+
+	    public StableArrayAdapter(Context context, int textViewResourceId,
+	        List<String> objects) {
+	      super(context, textViewResourceId, objects);
+	      for (int i = 0; i < objects.size(); ++i) {
+	        mIdMap.put(objects.get(i), i);
+	      }
+	    }
+
+	    @Override
+	    public long getItemId(int position) {
+	      String item = getItem(position);
+	      return mIdMap.get(item);
+	    }
+
+	    @Override
+	    public boolean hasStableIds() {
+	      return true;
+	    }
 	}
 	
 	/**
@@ -167,6 +219,4 @@ public class DisplayRoomStatusActivity extends Activity {
 		
 		return super.onOptionsItemSelected(item);
 	}
-
-
 }
