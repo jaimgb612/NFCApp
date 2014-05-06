@@ -30,12 +30,13 @@ public final class R {
     }
     public static final class id {
         public static final int action_about=0x7f08000a;
+        public static final int action_logout=0x7f08000b;
         public static final int action_refresh=0x7f080009;
         public static final int action_settings=0x7f080008;
+        public static final int displayAcknowledgement=0x7f080002;
         public static final int displayDataField=0x7f080004;
-        public static final int displayRoomStatusDetails=0x7f080002;
+        public static final int displayRoomStatusDetails=0x7f080001;
         public static final int displayRoomStatusHeader=0x7f080000;
-        public static final int displayServerStatus=0x7f080001;
         public static final int passwordField=0x7f080006;
         public static final int registrationButton=0x7f080007;
         public static final int textView=0x7f080003;
@@ -58,23 +59,28 @@ public final class R {
         public static final int user_registration=0x7f070005;
     }
     public static final class string {
-        public static final int abhishek=0x7f05000b;
-        public static final int about_heading=0x7f050008;
+        public static final int abhishek=0x7f050010;
+        public static final int about_heading=0x7f05000d;
         public static final int action_about=0x7f050002;
+        public static final int action_logout=0x7f050004;
         public static final int action_refresh=0x7f050003;
         public static final int action_settings=0x7f050001;
         public static final int app_name=0x7f050000;
-        public static final int group_members=0x7f050009;
-        public static final int gurpreet=0x7f05000c;
-        public static final int hello_world=0x7f050004;
-        public static final int password_field=0x7f050006;
-        public static final int registration_button_field=0x7f050007;
-        public static final int rohith=0x7f05000a;
-        public static final int title_activity_about=0x7f050010;
-        public static final int title_activity_display_room_status=0x7f05000f;
-        public static final int title_activity_send_data_to_server=0x7f05000e;
-        public static final int title_activity_user_registration=0x7f05000d;
-        public static final int username_field=0x7f050005;
+        public static final int group_members=0x7f05000e;
+        public static final int gurpreet=0x7f050011;
+        public static final int hello_world=0x7f050005;
+        public static final int password_field=0x7f050009;
+        public static final int private_filename=0x7f050007;
+        public static final int registration_button_field=0x7f05000a;
+        public static final int reservation_message=0x7f05000b;
+        public static final int rohith=0x7f05000f;
+        public static final int room_status_message=0x7f05000c;
+        public static final int server_unavailable=0x7f050006;
+        public static final int title_activity_about=0x7f050015;
+        public static final int title_activity_display_room_status=0x7f050014;
+        public static final int title_activity_send_data_to_server=0x7f050013;
+        public static final int title_activity_user_registration=0x7f050012;
+        public static final int username_field=0x7f050008;
     }
     public static final class style {
         /** 

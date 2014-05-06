@@ -8,14 +8,17 @@ import android.support.v4.app.NavUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.nfcapp.R;
 import com.example.nfcapp.utilClasses.SocketClass;
 
 public class SendDataToServerActivity extends Activity {
+	
+	public final static String TRIGGER = "com.example.nfcapp.TRIGGER";
+	
 	private String text;
 	public boolean serverUnavailableFlag = false;
+	public static String serverResponse = null;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -27,35 +30,29 @@ public class SendDataToServerActivity extends Activity {
 		Intent receivedIntent = getIntent();
 		text = (String) receivedIntent.getStringExtra(MainActivity.SEND_DATA_TO_SERVER);
 		TextView dataField = (TextView) findViewById(R.id.displayDataField);
-		dataField.setText(text);
+		dataField.setText("Sending data to server.");
 		
 		sendDataToServer();
-		displayRoomStatus();
-		finish();
+		if (serverUnavailableFlag == false) {
+			displayRoomStatus();
+			finish();
+		}
 	}
 	
 	public void sendDataToServer() {
 		SendDataToServerTask newTask = new SendDataToServerTask();
 		newTask.execute();
 		
-		if (serverUnavailableFlag == true) {
+		/*if (serverUnavailableFlag == true) {
 			Toast.makeText(this, "Server unavailable.", Toast.LENGTH_SHORT).show();
-		}
+		}*/
 	}
 	
 	public void displayRoomStatus() {
 		Intent intentToDisplay = new Intent(this, DisplayRoomStatusActivity.class);
+		intentToDisplay.putExtra(TRIGGER, 1);
 		startActivity(intentToDisplay);
 	}
-
-	/**
-	 * Set up the {@link android.app.ActionBar}.
-	 */
-	/*private void setupActionBar() {
-
-		getActionBar().setDisplayHomeAsUpEnabled(true);
-
-	}*/
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -89,11 +86,11 @@ public class SendDataToServerActivity extends Activity {
 	private class SendDataToServerTask extends AsyncTask<Void , Void, Void> {
 		 
 		public String createMessage() {
-			StringBuilder data = new StringBuilder("MESSAGEA");
+			StringBuilder data = new StringBuilder(getResources().getString(R.string.reservation_message));
 			data.append(" ");
 			data.append(text);
-			//data.append(" ");
-			//data.append(MainActivity.USERNAME);
+			data.append(" ");
+			data.append(MainActivity.USERNAME);
 			System.out.println(data);
 			return data.toString();
 		}
@@ -107,11 +104,13 @@ public class SendDataToServerActivity extends Activity {
 				}
 				
 				clientSocket.openOutputStream();
-				//objUtil.openInputStream();
 				
 				message = new String(createMessage());
 				System.out.println(message);
 				clientSocket.writeToSocket(message);
+				
+				clientSocket.openInputStream();
+				serverResponse = clientSocket.readFromSocket();
 				
 				//close
 				clientSocket.closeSocket();
@@ -121,8 +120,10 @@ public class SendDataToServerActivity extends Activity {
 		 }
 
 	     protected void onPostExecute(Void arg) {
-	         //showDialog("Downloaded " + result + " bytes");
-	    	 
+	    	if (serverUnavailableFlag == true) {
+	    		TextView dataField = (TextView) findViewById(R.id.displayDataField);
+	    		dataField.setText(R.string.server_unavailable);
+	 		}
 	     }
 	}
 }

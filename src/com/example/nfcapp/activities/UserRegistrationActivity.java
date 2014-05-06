@@ -27,8 +27,6 @@ public class UserRegistrationActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_user_registration);
-		// Show the Up button in the action bar.
-		//setupActionBar();
 		
 		Intent intent = getIntent();
 		trigger = intent.getIntExtra(MainActivity.TRIGGER, -1);

@@ -70,7 +70,7 @@ public class MainActivity extends Activity {
 	public String getNFCTagData(Intent intent) {
 		StringBuffer dispString = new StringBuffer();
 		String holderString = new String();
-		Toast.makeText(this, "NFC Tag detected", Toast.LENGTH_SHORT).show();
+		//Toast.makeText(this, "NFC Tag detected", Toast.LENGTH_SHORT).show();
 		
 	    Parcelable[] rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
 	    if (rawMsgs != null) {
@@ -183,6 +183,7 @@ public class MainActivity extends Activity {
 	public void displayRoomStatus() {
 		//Toast.makeText(this, "Displaying Room Status", Toast.LENGTH_SHORT).show();
 		Intent intentToDisplay = new Intent(this, DisplayRoomStatusActivity.class);
+		intentToDisplay.putExtra(TRIGGER, 0);
 		startActivity(intentToDisplay);
 	}
 

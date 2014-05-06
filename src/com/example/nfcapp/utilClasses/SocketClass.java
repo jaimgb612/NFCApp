@@ -19,11 +19,12 @@ public class SocketClass {
 			clientSocket = new Socket();
 			try {
 				clientSocket.connect(new InetSocketAddress(serverIpAddr, port), 4000);
+				clientSocket.setSoTimeout(5000);
 				return 0;
 			}
 			catch(IOException e) {
+				System.out.println("ERROR: " + e.getMessage());
 				return -1;
-				//e.printStackTrace();
 		    }
 		}
 		
@@ -33,6 +34,7 @@ public class SocketClass {
 			}
 			catch(IOException e) {
 		        e.printStackTrace();
+		        in = null;
 		    }
 		}
 		
@@ -40,9 +42,8 @@ public class SocketClass {
 			String read_data = null;
 			try {
 				read_data = in.readLine();
-			}
-			catch(IOException e) {
-		        e.printStackTrace();
+			} catch(IOException e) {
+		        System.out.println("ERROR: " + e.getMessage());
 		        read_data = null;
 		    }
 			return read_data;
@@ -53,7 +54,8 @@ public class SocketClass {
 				out = new PrintWriter(clientSocket.getOutputStream(), true);
 			}
 	        catch(IOException e) {
-			     e.printStackTrace();
+	        	System.out.println("ERROR: " + e.getMessage());
+	        	out = null;
 			}
 		}
 		
@@ -66,7 +68,7 @@ public class SocketClass {
 			  clientSocket.close();
 		  } 
 		  catch (IOException e) {
-			e.printStackTrace();
+			  System.out.println("ERROR: " + e.getMessage());
 		  }
 		}
 }

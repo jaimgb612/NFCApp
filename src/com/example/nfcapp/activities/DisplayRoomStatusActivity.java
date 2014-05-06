@@ -19,6 +19,7 @@ import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.nfcapp.R;
 import com.example.nfcapp.utilClasses.SocketClass;
@@ -26,40 +27,58 @@ import com.example.nfcapp.utilClasses.SocketClass;
 public class DisplayRoomStatusActivity extends Activity {
 
 	public boolean serverUnavailableFlag = false;
-	public ArrayList<String> list = new ArrayList<String>();
-	
+	public ArrayList<String> list = null;
+	private int trigger = 0;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_display_room_status);
-		//setupActionBar();
 		
-		@SuppressWarnings("unused")
 		Intent receivedIntent = getIntent();
+		trigger = receivedIntent.getIntExtra(SendDataToServerActivity.TRIGGER, 0);
 		displayRoomStatus();
+	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+	    finish();
 	}
 	
 	public void displayRoomStatus() {
 		TextView dataField = (TextView) findViewById(R.id.displayRoomStatusHeader);
  		dataField.setText("Loading...");
+ 		list = null;
 		RequestDataFromServerTask task = new RequestDataFromServerTask();
 		task.execute();
 	}
 	
 	public void createLayoutForDisplay() {
 		ListView listView = (ListView) findViewById(R.id.displayRoomStatusDetails);
-		
 		StableArrayAdapter adapter = new StableArrayAdapter(this, 
 			        android.R.layout.simple_list_item_1, list);
 		listView.setAdapter(adapter);
+		
+		if (trigger == 1) {
+			if (SendDataToServerActivity.serverResponse != null) {
+				String ack = new String(SendDataToServerActivity.serverResponse);
+				System.out.println(ack);
+				/*TextView myTextView = (TextView) findViewById(R.id.displayAcknowledgement);
+				myTextView.setText(ack);*/
+				Toast.makeText(this, ack, Toast.LENGTH_SHORT).show();
+			} else {
+				System.out.println("ERROR: Didn't receive acknowledgement from server.");
+			}
+		}
 	}
 	
 	private class RequestDataFromServerTask extends AsyncTask<Void , Void, Void> {
 		 
 		public String createMessage() {
-			StringBuilder data = new StringBuilder("MESSAGEB");
-			//data.append(" ");
-			//data.append(MainActivity.USERNAME);
+			StringBuilder data = new StringBuilder(getResources().getString(R.string.room_status_message));
+			data.append(" ");
+			data.append(MainActivity.USERNAME);
 			System.out.println(data);
 			return data.toString();
 		}
@@ -68,30 +87,29 @@ public class DisplayRoomStatusActivity extends Activity {
 			JSONObject jsonObj = null;
 			JSONArray results = null;
 			int i = 0;
+			System.out.println(text);
 			try {
 				jsonObj = new JSONObject(text);
-				results = jsonObj.getJSONArray("data");
+				results = jsonObj.getJSONArray("Library_db");
+				list = new ArrayList<String>();
 			} catch (JSONException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				System.out.println("String to JSON or to Array error");
+				System.out.println("String to JSON or to Array error: " + e.getMessage());
 			}
 			while (!results.isNull(i)) {
 				try {
 					JSONObject result = results.getJSONObject(i);
-					String roomNo = (String) result.get("Room no");
+					String roomNo = (String) result.get("Room_no");
+					roomNo.trim();
 					if ((Integer) result.get("Flag") == 0) {
 						list.add(new String("            " + roomNo + "      :        Free            "));
 					} else {
 						list.add(new String("            " + roomNo + "      :      Occupied          "));
 					}
 				} catch (JSONException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					System.out.println("ERROR: " + e.getMessage());
 				}
 				i++;
 			}
-			
 		}
 		
 		protected Void doInBackground(Void... args) {
@@ -106,18 +124,16 @@ public class DisplayRoomStatusActivity extends Activity {
 				}
 				
 				clientSocket.openOutputStream();
-				//objUtil.openInputStream();
 				
 				message = new String(createMessage());
-				System.out.println(message);
+				//System.out.println(message);
 				clientSocket.writeToSocket(message);
 				
-				receivedMessage.append("{\"data\":");
 				clientSocket.openInputStream();
+				
 				if ((receivedText = clientSocket.readFromSocket()) != null) {
 					receivedMessage.append(receivedText);
 				}
-				receivedMessage.append("}");
 				
 				System.out.println("JSON: " + receivedMessage);
 				
@@ -137,7 +153,7 @@ public class DisplayRoomStatusActivity extends Activity {
 	     public void setupDisplayAfterLoad() {
 	 		TextView dataField = (TextView) findViewById(R.id.displayRoomStatusHeader);
 	 		if (serverUnavailableFlag == true) {
-	 			dataField.setText("Server unavailable");
+	 			dataField.setText(R.string.server_unavailable);
 	 			serverUnavailableFlag = false;
 	 		} else {
 	 			dataField.setText("Room Occupancy Details");
@@ -170,15 +186,6 @@ public class DisplayRoomStatusActivity extends Activity {
 	    }
 	}
 	
-	/**
-	 * Set up the {@link android.app.ActionBar}.
-	 */
-	/*private void setupActionBar() {
-
-		getActionBar().setDisplayHomeAsUpEnabled(true);
-
-	}*/
-
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 
@@ -214,6 +221,13 @@ public class DisplayRoomStatusActivity extends Activity {
 			case R.id.action_about:
 				Intent aboutIntent = new Intent(this, AboutActivity.class);
 				startActivity(aboutIntent);
+				break;
+				
+			case R.id.action_logout:
+				deleteFile("NFCAppPrivateData");
+				Intent logoutIntent = new Intent(this, MainActivity.class);
+				startActivity(logoutIntent);
+				finish();
 				break;
 		}
 		
